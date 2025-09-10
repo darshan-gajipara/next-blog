@@ -1,0 +1,51 @@
+import connectDB from "@/lib/db";
+import User from "@/lib/models/users";
+import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
+import { GenerateJWT } from "@/lib/GenerateJWT";
+
+export async function POST(req: NextRequest) {
+
+    try {
+        const { firstName, lastName, email, username, password } = await req.json();
+        if (!firstName || !lastName || !email || !username || !password) {
+            return NextResponse.json({ message: "All fields are required" }, { status: 400 })
+        }
+        await connectDB();
+
+        const userAvailable = await User.findOne({ email })
+        if (userAvailable) {
+            return NextResponse.json({ message: "User already registered!!" }, { status: 400 })
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = await User.create({
+            firstName,
+            lastName,
+            email,
+            username,
+            password: hashedPassword
+        })
+        console.log(`user created ${newUser}`);
+
+        if (!newUser) {
+            return NextResponse.json({ message: "Something went wrong!!" }, { status: 500 })
+        }
+
+        const data = {
+            firstName,
+            lastName,
+            email,
+            username,
+            id: newUser._id
+        }
+
+        const JWT_Token = await GenerateJWT(data);
+
+        return NextResponse.json({ username, JWT_Token: JWT_Token }, { status: 200 })
+
+    } catch (error) {
+        return NextResponse.json(JSON.stringify(error))
+    }
+}

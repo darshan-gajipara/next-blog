@@ -2,9 +2,9 @@ import connectDB from "@/lib/db";
 import Blog from "@/lib/models/blogs";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, context: { params: { id: string } }) {
     try {
-        const id = await params?.id;
+        const id = await context?.params.id;
         await connectDB();
 
         const blog = await Blog.findById(id);

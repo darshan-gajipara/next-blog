@@ -1,0 +1,64 @@
+/* Loader.module.css */
+
+.wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px;
+}
+
+/* accessible off-screen text for screen readers */
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* spinner base */
+.spinner {
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 6px solid rgba(0, 0, 0, 0.08); /* track */
+  border-top-color: rgba(0, 0, 0, 0.65);   /* head */
+  animation: spin 0.9s linear infinite, pulse 1.8s ease-in-out infinite;
+  /* subtle drop shadow */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  background: transparent;
+}
+
+/* fast rotation for the ring */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* pulse of ring's contrast to give life */
+@keyframes pulse {
+  0% {
+    transform: scale(1) rotate(0deg);
+    border-top-color: rgba(0, 0, 0, 0.6);
+  }
+  50% {
+    transform: scale(0.98) rotate(180deg);
+    border-top-color: rgba(0, 0, 0, 0.35);
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+    border-top-color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* optional: make loader responsive on small screens */
+@media (max-width: 420px) {
+  .spinner {
+    border-width: 5px;
+  }
+}

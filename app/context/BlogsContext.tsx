@@ -3,6 +3,7 @@
 import React, { createContext, useState, useEffect, ReactNode, useContext } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import AxiosApi from "@/lib/axios";
 
 // Blog interface (Mongo style data)
 export interface Blog {
@@ -24,21 +25,19 @@ interface BlogContextType {
   deleteData: (id: string) => void;
 }
 
-// ✅ Create Axios instance
-const api = axios.create({
-  baseURL: "http://localhost:3000/api",
-});
+// const api = axios.create({
+//   baseURL: process.env.BACKEND_BASE_URL
+// });
 
-// ✅ Attach token from localStorage automatically
-api.interceptors.request.use((config) => {
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-  }
-  return config;
-});
+// api.interceptors.request.use((config) => {
+//   if (typeof window !== "undefined") {
+//     const token = localStorage.getItem("token");
+//     if (token) {
+//       config.headers.Authorization = `Bearer ${token}`;
+//     }
+//   }
+//   return config;
+// });
 
 const BlogContext = createContext<BlogContextType | undefined>(undefined);
 
@@ -50,12 +49,23 @@ export function BlogProvider({ children }: { children: ReactNode }) {
     getAllData();
   }, []);
 
+  const handleAuthError = (err: unknown) => {
+    if (axios.isAxiosError(err)) {
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        router.push("/login");
+      }
+    }
+    // console.error("API Error:", err);
+  };
+
   const getAllData = async () => {
     try {
-      const res = await api.get("/blogs/get");
+      const res = await AxiosApi.get("/blogs/get");
       setBlogData(res.data);
       return res.data;
     } catch (err) {
+      handleAuthError(err);
       console.error("Error fetching blogs:", err);
     }
   };
@@ -63,30 +73,35 @@ export function BlogProvider({ children }: { children: ReactNode }) {
 
   const addData = async (value: Omit<Blog, "_id" | "createdAt" | "updatedAt" | "__v">) => {
     try {
-      await api.post("/blogs/add", value);
+      await AxiosApi.post("/blogs/add", value);
       router.push("/blogs");
     } catch (err) {
+      handleAuthError(err);
       console.error("Error adding blog:", err);
     }
   };
 
   const updateData = async (id: string, value: Partial<Blog>) => {
     try {
-      await api.put(`/blogs/update/${id}`, value);
+      await AxiosApi.put(`/blogs/update/${id}`, value);
       router.push("/blogs");
     } catch (err) {
+      handleAuthError(err);
       console.error("Error updating blog:", err);
     }
   };
 
 
   const deleteData = (id: string) => {
-    api
+    AxiosApi
       .delete(`/blogs/delete/${id}`) // ✅ added missing slash
       .then(() => {
         getAllData();
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        handleAuthError(err);
+        console.log(err)
+      });
   };
 
   return (

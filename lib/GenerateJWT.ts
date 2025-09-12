@@ -6,7 +6,7 @@ export const GenerateJWT = async <T extends JWTPayload>(data : T) =>{
     const JWT_TOKEN = await new SignJWT(data)
     .setProtectedHeader({alg:"HS256"})
     .setIssuedAt()
-    .setExpirationTime('2h')
+    .setExpirationTime('24h')
     .sign(GenerateSecretKey())
     
     return JWT_TOKEN;

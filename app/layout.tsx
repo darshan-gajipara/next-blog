@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Link from "next/link";
-import { BlogProvider } from "./context/BlogsContext";
-import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/sonner";
+// import { BlogProvider } from "./context/BlogsContext";
+// import ClientWrapper from "@/lib/client-wrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,9 +36,11 @@ export default function RootLayout({
           <Link href={"/contact"} className="pl-5">Contact</Link>
           <Link href={"/users"} className="pl-5">Users</Link>
         </div> */}
-        <BlogProvider>
+        {/* <ClientWrapper>{children}</ClientWrapper> */}
+        <Toaster position="top-right" />
+        <div className="bg-blue-50">
           {children}
-        </BlogProvider>
+        </div>
       </body>
     </html>
   );

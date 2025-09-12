@@ -6,7 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import Link from "next/link";
-import { useBlogs } from "@/app/context/BlogsContext";
+// import { useBlogs } from "@/app/context/BlogsContext";
+import { useBlogsStore } from "@/app/store/useBlogsStore";
+import { useRouter } from "next/navigation";
+import Loader from "@/components/Loader/Loader";
 
 type BlogForm = {
     title: string;
@@ -14,16 +17,21 @@ type BlogForm = {
     author: string;
 };
 
-export default  function CreateBlogsComponet() {
+export default function CreateBlogsComponet() {
 
-    const { addData } = useBlogs();
+    // const { addData } = useBlogs();
+    const { addData, loading } = useBlogsStore();
     const { register, handleSubmit, formState: { errors } } = useForm<BlogForm>();
+    const router = useRouter();
 
     const onSubmit = async (data: BlogForm) => {
-        addData(data);
+        await addData(data)
+        router.push("/blogs");
     };
 
     return (
+        <>
+        {loading && <Loader size={64} label="Loading blogs" />}
         <div className="flex min-h-screen items-center justify-center">
             <Card className="w-full max-w-sm">
                 <CardHeader>
@@ -59,5 +67,6 @@ export default  function CreateBlogsComponet() {
                 </CardContent>
             </Card>
         </div>
+        </>
     )
 }

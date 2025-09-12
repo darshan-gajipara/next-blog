@@ -11,8 +11,8 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useEffect } from "react";
-import { useBlogs } from "@/app/context/BlogsContext";
+import { useEffect, useState } from "react";
+// import { useBlogs } from "@/app/context/BlogsContext";
 import Link from "next/link";
 import {
     Dialog,
@@ -25,14 +25,30 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
+import { useBlogsStore } from "@/app/store/useBlogsStore";
+import Loader from "@/components/Loader/Loader";
+import AxiosApi from "@/lib/axios";
 
-export default function BlogsComponet() {
-    const { blogData, deleteData } = useBlogs();
+function BlogsComponet() {
+    // const { blogData, deleteData } = useBlogs();
+    const { blogData, getAllData, deleteData, loading } = useBlogsStore();
     const router = useRouter();
+    const [user, setUser] = useState<string>("");
 
     useEffect(() => {
-        console.log(blogData);
-    })
+        const fetchUser = async () => {
+            const data = await getCurrentUser();
+            const user = data?.firstName + '  ' + data?.lastName
+            setUser(user);
+        };
+        fetchUser();
+        getAllData();
+    }, [getAllData])
+
+    const getCurrentUser = async () => {
+        const res = await AxiosApi.get('/currentUser');
+        return res.data;
+    }
 
     const handleDelete = (id: string) => {
         const confirm = window.confirm("Are You sure you want to delete this data ?")
@@ -50,14 +66,22 @@ export default function BlogsComponet() {
         }
     }
 
-    if (!blogData) return <p>Loading...</p>;
+    if (loading) {
+        return <Loader size={64} label="Loading blogs" />;
+    }
+
+    if (!blogData || blogData.length === 0) {
+        return <p>No blogs found.</p>;
+    }
     return (
         <div>
-            <div className="flex justify-end w-full p-4">
+            <div className="flex justify-end w-full p-4 items-center gap-4">
+                <div className="text-lg font-semibold text-gray-700">
+                    Hello,&nbsp;welcome back <span className="text-green-600">{user}</span>
+                </div>
                 <Button
                     variant="default"
                     className="flex text-center"
-                    style={{background:'rgb(63 139 90 / 65%)',color:"black"}}
                     onClick={handleLogout}
                 >
                     Logout
@@ -137,3 +161,5 @@ export default function BlogsComponet() {
 
     )
 }
+
+export default BlogsComponet

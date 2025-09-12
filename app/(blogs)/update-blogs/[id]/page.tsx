@@ -8,7 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { useBlogs } from "@/app/context/BlogsContext";
+// import { useBlogs } from "@/app/context/BlogsContext";
+import { useBlogsStore } from "@/app/store/useBlogsStore";
+import { useRouter, useSearchParams } from "next/navigation";
+import Loader from "@/components/Loader/Loader";
 
 type BlogForm = {
     title: string;
@@ -19,8 +22,12 @@ type BlogForm = {
 export default function UpdateBlogsComponent({ params }: { params: Promise<{ id: string }> }) {
 
     const { id } = use(params);
-    const { updateData } = useBlogs();
+    // const { updateData } = useBlogs();
+    const { updateData,loading } = useBlogsStore();
     const { register, handleSubmit, setValue, formState: { errors } } = useForm<BlogForm>();
+    const router = useRouter();
+
+    
 
     useEffect(() => {
         if (!id) return;
@@ -40,11 +47,14 @@ export default function UpdateBlogsComponent({ params }: { params: Promise<{ id:
             .catch((err) => console.log(err));
     }, [id, setValue]);
 
-    const onSubmit = (data: BlogForm) => {
-        updateData(id,data)
+    const onSubmit = async (data: BlogForm) => {
+        await updateData(id, data);
+        router.push("/blogs");
     };
 
     return (
+        <>
+        {loading && <Loader size={64} label="Loading blogs" />}
         <div className="flex min-h-screen items-center justify-center">
             <Card className="w-full max-w-sm">
                 <CardHeader>
@@ -80,5 +90,7 @@ export default function UpdateBlogsComponent({ params }: { params: Promise<{ id:
                 </CardContent>
             </Card>
         </div>
+        </>
+
     )
 }

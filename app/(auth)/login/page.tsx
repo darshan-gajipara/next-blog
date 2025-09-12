@@ -7,13 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { withDarkMode } from "@/lib/withDarkMode";
 
 type LoginForm = {
     email: string;
     password: string;
 };
 
-export default function Login() {
+function Login() {
     const router = useRouter();
     const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>();
 
@@ -78,3 +79,5 @@ export default function Login() {
         </div>
     );
 }
+
+export default withDarkMode(Login)

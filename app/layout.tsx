@@ -37,9 +37,9 @@ export default function RootLayout({
           <Link href={"/users"} className="pl-5">Users</Link>
         </div> */}
         {/* <ClientWrapper>{children}</ClientWrapper> */}
-        <Toaster position="top-right" />
         <div className="bg-blue-50">
           {children}
+          <Toaster position="top-right" />
         </div>
       </body>
     </html>

@@ -17,10 +17,21 @@ export interface Blog {
   __v: { $numberInt: string };
 }
 
+export interface BlogApiResponse {
+  data: Blog[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
 interface BlogStore {
   blogData: Blog[] | null;
+  blogResponse : BlogApiResponse | null;
   loading: boolean;
-  getAllData: () => Promise<void>;
+  getAllData: (quarry?: string,page?:number,limit?:number) => Promise<void>;
   addData: (value: Omit<Blog, "_id" | "createdAt" | "updatedAt" | "__v">) => Promise<void>;
   updateData: (id: string, value: Partial<Blog>) => Promise<void>;
   deleteData: (id: string) => Promise<void>;
@@ -29,12 +40,13 @@ interface BlogStore {
 export const useBlogsStore = create<BlogStore>((set) => ({
   blogData: null,
   loading: false,
+  blogResponse:null,
 
-  getAllData: async () => {
-    set({ loading: true });
+  getAllData: async (quarry?:string,page?:number,limit?:number) => {
+    // set({ loading: true });
     try {
-      const blogs = await fetchBlogs();
-      set({ blogData: blogs });
+      const blogs = await fetchBlogs((quarry || ''), (page || 1),(limit || 2));
+      set({ blogResponse: blogs });
     } catch (err) {
       console.error("Error fetching blogs:", err);
     } finally {

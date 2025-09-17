@@ -28,12 +28,21 @@ import { useRouter } from "next/navigation";
 import { useBlogsStore } from "@/app/store/useBlogsStore";
 import Loader from "@/components/Loader/Loader";
 import AxiosApi from "@/lib/axios";
+import { Input } from "@/components/ui/input";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+} from "@/components/ui/pagination"
 
 function BlogsComponet() {
     // const { blogData, deleteData } = useBlogs();
-    const { blogData, getAllData, deleteData, loading } = useBlogsStore();
+    const { blogData, blogResponse, getAllData, deleteData, loading } = useBlogsStore();
     const router = useRouter();
     const [user, setUser] = useState<string>("");
+    const [quarry, setQuarry] = useState<string>("");
+    const [page, setPage] = useState<number>(1);
+    const [limit, setLimit] = useState<number>(2);
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -55,7 +64,11 @@ function BlogsComponet() {
         if (confirm) {
             deleteData(id);
         }
+    }
 
+    const handleSearch = (search: string) => {
+        setQuarry(search)
+        getAllData(quarry, page, limit);
     }
 
     const handleLogout = () => {
@@ -70,9 +83,9 @@ function BlogsComponet() {
         return <Loader size={64} label="Loading blogs" />;
     }
 
-    if (!blogData || blogData.length === 0) {
-        return <p>No blogs found.</p>;
-    }
+    // if (!blogResponse || blogResponse?.data?.length === 0) {
+    //     return <p>No blogs found.</p>;
+    // }
     return (
         <div>
             <div className="flex justify-end w-full p-4 items-center gap-4">
@@ -97,6 +110,11 @@ function BlogsComponet() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
+                        <Input
+                            placeholder="Search..."
+                            className="w-2xl border"
+                            onChange={(e) => handleSearch(e.target.value)}
+                        />
                         <div className="flex justify-end">
                             <Link href={"/create-blogs"}><Button>+Add</Button></Link>
                         </div>
@@ -111,48 +129,136 @@ function BlogsComponet() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {blogData?.map((blog) => (
-                                    <TableRow key={blog._id}>
-                                        <TableCell className="font-medium">{blog?.title}</TableCell>
-                                        <TableCell>{blog?.content}</TableCell>
-                                        <TableCell>{blog?.author}</TableCell>
-                                        <TableCell>
-                                            <Dialog>
-                                                <DialogTrigger asChild>
-                                                    <Button variant="outline" style={{ background: '#abf3f0' }}>View</Button>
-                                                </DialogTrigger>
-                                                <DialogContent className="sm:max-w-[425px]">
-                                                    <DialogHeader>
-                                                        <DialogTitle>Details Of Blog</DialogTitle>
-                                                    </DialogHeader>
-                                                    <div className="grid gap-4">
-                                                        <div className="grid gap-2 my-2">
-                                                            <div className="flex ml-2">Title : <Label className="ml-2">{blog?.title}</Label></div>
-                                                        </div>
-
-                                                        <div className="grid gap-2 my-2">
-                                                            <div className="flex ml-2">Content : <Label className="ml-2">{blog?.content}</Label></div>
-                                                        </div>
-
-                                                        <div className="grid gap-2 my-2">
-                                                            <div className="flex ml-2">Author : <Label className="ml-2">{blog?.author}</Label></div>
-                                                        </div>
-                                                    </div>
-                                                    <DialogFooter>
-                                                        <DialogClose asChild>
-                                                            <Button variant="outline">Close</Button>
-                                                        </DialogClose>
-                                                    </DialogFooter>
-                                                </DialogContent>
-                                            </Dialog>
-                                            {/* <Link href={`/read-blogs/${blog?._id}`} className="mt-6"><Button variant={"outline"}>View</Button></Link> */}
-                                            <Link href={`/update-blogs/${blog?._id}`} className="mt-6 ml-2"><Button variant={"outline"} style={{ background: '#ed9de3' }}>Update</Button></Link>
-                                            <Button className="ml-2 " variant={"destructive"} onClick={() => handleDelete(blog._id)} >Delete</Button>
+                                {!blogResponse || blogResponse?.data?.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={4} className="text-center">
+                                            No record found..
                                         </TableCell>
                                     </TableRow>
-                                ))}
+                                ) : (
+                                    blogResponse.data.map((blog) => (
+                                        <TableRow key={blog._id}>
+                                            <TableCell className="font-medium">{blog?.title}</TableCell>
+                                            <TableCell>{blog?.content}</TableCell>
+                                            <TableCell>{blog?.author}</TableCell>
+                                            <TableCell>
+                                                <Dialog>
+                                                    <DialogTrigger asChild>
+                                                        <Button variant="outline" style={{ background: "#abf3f0" }}>
+                                                            View
+                                                        </Button>
+                                                    </DialogTrigger>
+                                                    <DialogContent className="sm:max-w-[425px]">
+                                                        <DialogHeader>
+                                                            <DialogTitle>Details Of Blog</DialogTitle>
+                                                        </DialogHeader>
+                                                        <div className="grid gap-4">
+                                                            <div className="grid gap-2 my-2">
+                                                                <div className="flex ml-2">
+                                                                    Title : <Label className="ml-2">{blog?.title}</Label>
+                                                                </div>
+                                                            </div>
+                                                            <div className="grid gap-2 my-2">
+                                                                <div className="flex ml-2">
+                                                                    Content : <Label className="ml-2">{blog?.content}</Label>
+                                                                </div>
+                                                            </div>
+                                                            <div className="grid gap-2 my-2">
+                                                                <div className="flex ml-2">
+                                                                    Author : <Label className="ml-2">{blog?.author}</Label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <DialogFooter>
+                                                            <DialogClose asChild>
+                                                                <Button variant="outline">Close</Button>
+                                                            </DialogClose>
+                                                        </DialogFooter>
+                                                    </DialogContent>
+                                                </Dialog>
+                                                <Link
+                                                    href={`/update-blogs/${blog?._id}`}
+                                                    className="mt-6 ml-2"
+                                                >
+                                                    <Button
+                                                        variant="outline"
+                                                        style={{ background: "#ed9de3" }}
+                                                    >
+                                                        Update
+                                                    </Button>
+                                                </Link>
+                                                <Button
+                                                    className="ml-2"
+                                                    variant="destructive"
+                                                    onClick={() => handleDelete(blog._id)}
+                                                >
+                                                    Delete
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
                             </TableBody>
                         </Table>
+
+                        <Pagination>
+                            <PaginationContent>
+                                {/* Previous button */}
+                                <PaginationItem>
+                                    <Button
+                                        variant="outline"
+                                        disabled={page === 1}
+                                        onClick={() => {
+                                            const newPage = Math.max(1, page - 1);
+                                            setPage(newPage);
+                                            getAllData(quarry, newPage, limit);
+                                        }}
+                                    >
+                                        Previous
+                                    </Button>
+                                </PaginationItem>
+
+                                {/* Page numbers */}
+                                {Array.from({ length: blogResponse?.pagination?.totalPages || 1 }).map(
+                                    (_, index) => {
+                                        const pageNumber = index + 1;
+                                        return (
+                                            <PaginationItem key={pageNumber}>
+                                                <Button
+                                                    variant={page === pageNumber ? "default" : "outline"}
+                                                    onClick={() => {
+                                                        setPage(pageNumber);
+                                                        getAllData(quarry, pageNumber, limit);
+                                                    }}
+                                                >
+                                                    {pageNumber}
+                                                </Button>
+                                            </PaginationItem>
+                                        );
+                                    }
+                                )}
+
+                                {/* Next button */}
+                                <PaginationItem>
+                                    <Button
+                                        variant="outline"
+                                        disabled={page === blogResponse?.pagination?.totalPages}
+                                        onClick={() => {
+                                            const newPage = Math.min(
+                                                blogResponse?.pagination?.totalPages ?? 1,
+                                                page + 1
+                                            );
+                                            setPage(newPage);
+                                            getAllData(quarry, newPage, limit);
+                                        }}
+                                    >
+                                        Next
+                                    </Button>
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
+
+
                     </CardContent>
                 </Card>
 

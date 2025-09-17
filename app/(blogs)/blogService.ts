@@ -1,8 +1,8 @@
 import AxiosApi from "@/lib/axios";
-import { Blog } from "../store/useBlogsStore";
+import { Blog, BlogApiResponse } from "../store/useBlogsStore";
 
-export async function fetchBlogs(): Promise<Blog[]> {
-    const res = await AxiosApi.get("/blogs/get");
+export async function fetchBlogs(quarry:string,page:number,limit:number): Promise<BlogApiResponse> {
+    const res = await AxiosApi.get(`/blogs/get?page=${page}&limit=${limit}&search=${quarry}`);
     return res.data;
 }
 

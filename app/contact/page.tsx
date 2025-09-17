@@ -1,8 +1,9 @@
 // "use client"
 
+import MultiStepForm from "../multiStepForm/page";
+
 // import { useState } from "react"
 // import About from "../about/page";
-import ButtonComponet from "../button/page"
 
 export default async function Contact() {
     // const [count, setCount] = useState(0);
@@ -15,7 +16,7 @@ export default async function Contact() {
     return (
         <div>
             <h1>Contact Page</h1>
-            <ButtonComponet />
+            <MultiStepForm />
         </div>
 
     )

@@ -34,6 +34,7 @@ import {
     PaginationContent,
     PaginationItem,
 } from "@/components/ui/pagination"
+import { useQueryClient } from "@tanstack/react-query";
 
 function BlogsComponet() {
     // const { blogData, deleteData } = useBlogs();
@@ -68,7 +69,7 @@ function BlogsComponet() {
 
     const handleSearch = (search: string) => {
         setQuarry(search)
-        getAllData(quarry, page, limit);
+        getAllData(search, page, limit);
     }
 
     const handleLogout = () => {
@@ -88,6 +89,17 @@ function BlogsComponet() {
     // }
     return (
         <div>
+            <div className="flex justify-between items-center border-b px-4">
+                <div>
+                <Link href={"/"} className="pl-5">Home</Link>
+                <Link href={"/about"} className="pl-5">About</Link>
+                <Link href={"/contact"} className="pl-5">Contact</Link>
+                <Link href={"/users"} className="pl-5">Users</Link>
+                <Link href={"/tanstack"} className="pl-5">Tanstack</Link>
+                <Link href={"/providerForm"} className="pl-5">ProviderForm</Link>
+                <Link href={"/multiStepForm"} className="pl-5">MultiStepForm</Link>
+                <Link href={"/counter"} className="pl-5">Counter</Link>
+            </div>
             <div className="flex justify-end w-full p-4 items-center gap-4">
                 <div className="text-lg font-semibold text-gray-700">
                     Hello,&nbsp;welcome back <span className="text-green-600">{user}</span>
@@ -99,6 +111,7 @@ function BlogsComponet() {
                 >
                     Logout
                 </Button>
+            </div>
             </div>
 
             <div className="flex justify-center items-center min-h-screen">

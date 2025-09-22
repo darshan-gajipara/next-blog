@@ -1,5 +1,6 @@
 import connectDB from "@/lib/db";
 import Blog from "@/lib/models/blogs";
+import { PipelineStage } from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
@@ -11,27 +12,46 @@ export async function GET(req: NextRequest) {
         const page = parseInt(searchParams.get("page") || "1", 10);
         const limit = parseInt(searchParams.get("limit") || "10", 10);
 
-        let query = {};
+        // let query = {};
+
+        // if (search) {
+        //     query = {
+        //         $or: [
+        //             { title: { $regex: search, $options: "i" } },
+        //             { author: { $regex: search, $options: "i" } },
+        //             { content: { $regex: search, $options: "i" } },
+        //         ],
+        //     };
+        // }
+        // const blogs = await Blog.find(query, null, {
+        //     skip: (page - 1) * limit,
+        //     limit: limit,
+        // });
+        // const total = await Blog.countDocuments(query);
+
+
+        const skip = (page - 1) * limit;
+
+        const pipeline: PipelineStage[] = [
+            { $skip: skip },
+            { $limit: limit },
+        ];
 
         if (search) {
-            query = {
-                $or: [
-                    { title: { $regex: search, $options: "i" } },
-                    { author: { $regex: search, $options: "i" } },
-                    { content: { $regex: search, $options: "i" } },
-                ],
-            };
+            pipeline.push({
+                $match: {
+                    $or: [
+                        { title: { $regex: search, $options: "i" } },
+                        { author: { $regex: search, $options: "i" } },
+                        { content: { $regex: search, $options: "i" } },
+                    ],
+                },
+            });
         }
 
-        // const skip = (page - 1) * limit;
-
-        const blogs = await Blog.find(query, null, {
-            skip: (page - 1) * limit,
-            limit: limit,
-        });
-
-
-        const total = await Blog.countDocuments(query);
+        const blogs = await Blog.aggregate(pipeline);
+        const total = await Blog.countDocuments();
+        
 
         return NextResponse.json(
             {

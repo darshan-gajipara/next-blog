@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
+import TanstackProviders from "@/components/Provider/tanstackproviders";
 // import { BlogProvider } from "./context/BlogsContext";
 // import ClientWrapper from "@/lib/client-wrapper";
 
@@ -38,7 +39,9 @@ export default function RootLayout({
         </div> */}
         {/* <ClientWrapper>{children}</ClientWrapper> */}
         <div className="bg-blue-50">
-          {children}
+          <TanstackProviders>
+            {children}
+          </TanstackProviders>
           <Toaster position="top-right" />
         </div>
       </body>

@@ -2,70 +2,63 @@ import connectDB from "@/lib/db";
 import Blog from "@/lib/models/blogs";
 import { PipelineStage } from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
+import { withCORS } from "@/lib/cors";
 
 export async function GET(req: NextRequest) {
-    try {
-        await connectDB();
+  try {
+    await connectDB();
 
-        const { searchParams } = new URL(req.url);
-        const search = searchParams.get("search");
-        const page = parseInt(searchParams.get("page") || "1", 10);
-        const limit = parseInt(searchParams.get("limit") || "10", 10);
+    const { searchParams } = new URL(req.url);
+    const search = searchParams.get("search");
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const limit = parseInt(searchParams.get("limit") || "10", 10);
 
-        // let query = {};
+    const skip = (page - 1) * limit;
 
-        // if (search) {
-        //     query = {
-        //         $or: [
-        //             { title: { $regex: search, $options: "i" } },
-        //             { author: { $regex: search, $options: "i" } },
-        //             { content: { $regex: search, $options: "i" } },
-        //         ],
-        //     };
-        // }
-        // const blogs = await Blog.find(query, null, {
-        //     skip: (page - 1) * limit,
-        //     limit: limit,
-        // });
-        // const total = await Blog.countDocuments(query);
+    const pipeline: PipelineStage[] = [
+      { $skip: skip },
+      { $limit: limit },
+    ];
 
-
-        const skip = (page - 1) * limit;
-
-        const pipeline: PipelineStage[] = [
-            { $skip: skip },
-            { $limit: limit },
-        ];
-
-        if (search) {
-            pipeline.push({
-                $match: {
-                    $or: [
-                        { title: { $regex: search, $options: "i" } },
-                        { author: { $regex: search, $options: "i" } },
-                        { content: { $regex: search, $options: "i" } },
-                    ],
-                },
-            });
-        }
-
-        const blogs = await Blog.aggregate(pipeline);
-        const total = await Blog.countDocuments();
-        
-
-        return NextResponse.json(
-            {
-                data: blogs,
-                pagination: {
-                    total,
-                    page,
-                    limit,
-                    totalPages: Math.ceil(total / limit),
-                },
-            },
-            { status: 200 }
-        );
-    } catch (error) {
-        return NextResponse.json("Error featching blogs" + JSON.stringify(error), { status: 500 })
+    if (search) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { title: { $regex: search, $options: "i" } },
+            { author: { $regex: search, $options: "i" } },
+            { content: { $regex: search, $options: "i" } },
+          ],
+        },
+      });
     }
+
+    const blogs = await Blog.aggregate(pipeline);
+    const total = await Blog.countDocuments();
+
+    const response = NextResponse.json(
+      {
+        data: blogs,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+        },
+      },
+      { status: 200 }
+    );
+
+    return withCORS(response);
+  } catch (error) {
+    const response = NextResponse.json(
+      { message: "Error fetching blogs", error: String(error) },
+      { status: 500 }
+    );
+    return withCORS(response);
+  }
+}
+
+// Handle preflight requests
+export async function OPTIONS() {
+  return withCORS(NextResponse.json({}, { status: 200 }));
 }

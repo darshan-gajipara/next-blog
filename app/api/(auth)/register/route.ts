@@ -3,19 +3,20 @@ import User from "@/lib/models/users";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { GenerateJWT } from "@/lib/GenerateJWT";
+import { withCORS } from "@/lib/cors";
 
 export async function POST(req: NextRequest) {
 
     try {
         const { firstName, lastName, email, username, password } = await req.json();
         if (!firstName || !lastName || !email || !username || !password) {
-            return NextResponse.json({ message: "All fields are required" }, { status: 400 })
+            return withCORS(NextResponse.json({ message: "All fields are required" }, { status: 400 }))
         }
         await connectDB();
 
         const userAvailable = await User.findOne({ email })
         if (userAvailable) {
-            return NextResponse.json({ message: "User already registered!!" }, { status: 400 })
+            return withCORS(NextResponse.json({ message: "User already registered!!" }, { status: 400 }))
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -30,7 +31,7 @@ export async function POST(req: NextRequest) {
         console.log(`user created ${newUser}`);
 
         if (!newUser) {
-            return NextResponse.json({ message: "Something went wrong!!" }, { status: 500 })
+            return withCORS(NextResponse.json({ message: "Something went wrong!!" }, { status: 500 }))
         }
 
         const data = {
@@ -43,9 +44,9 @@ export async function POST(req: NextRequest) {
 
         const JWT_Token = await GenerateJWT(data);
 
-        return NextResponse.json({ username, JWT_Token: JWT_Token }, { status: 200 })
+        return withCORS(NextResponse.json({ username, JWT_Token: JWT_Token }, { status: 200 }))
 
     } catch (error) {
-        return NextResponse.json(JSON.stringify(error))
+        return withCORS(NextResponse.json(JSON.stringify(error)))
     }
 }

@@ -1,3 +1,4 @@
+import { withCORS } from "@/lib/cors";
 import connectDB from "@/lib/db";
 import { GenerateJWT } from "@/lib/GenerateJWT";
 import User from "@/lib/models/users";
@@ -9,19 +10,19 @@ export async function POST(req: NextRequest) {
 
         const { email, password } = await req.json();
         if (!email || !password) {
-            return NextResponse.json({ message: "All fields are required" }, { status: 400 })
+            return withCORS(NextResponse.json({ message: "All fields are required" }, { status: 400 }))
         }
         await connectDB();
 
         const user = await User.findOne({ email })
         if (!user) {
-            return NextResponse.json({ message: "User not found!!" }, { status: 404 })
+            return withCORS(NextResponse.json({ message: "User not found!!" }, { status: 404 }))
         }
         console.log("user => ", user)
 
         const isValidPassword = await bcrypt.compare(password, user.password);
         if (!isValidPassword) {
-            return NextResponse.json({ message: "Invalid Email or Password!!" }, { status: 401 })
+            return withCORS(NextResponse.json({ message: "Invalid Email or Password!!" }, { status: 401 }))
         }
 
         const data = {
@@ -35,9 +36,9 @@ export async function POST(req: NextRequest) {
         // const JWT_Token = await GenerateJWT(data);
         const JWT_Token = await GenerateJWT(data);
 
-        return NextResponse.json({ JWT_Token: JWT_Token }, { status: 200 })
+        return withCORS(NextResponse.json({ JWT_Token: JWT_Token }, { status: 200 }))
 
     } catch (error) {
-        return NextResponse.json(JSON.stringify(error))
+        return withCORS(NextResponse.json(JSON.stringify(error)))
     }
 }

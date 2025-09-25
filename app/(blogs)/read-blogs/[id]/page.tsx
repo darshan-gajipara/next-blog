@@ -25,7 +25,7 @@ export default function ReadBlogsComponent({ params }: { params: Promise<{ id: s
     useEffect(() => {
         if (!id) return;
         axios
-            .get(`${process.env.BACKEND_BASE_URL}/blogs/get/${id}`, {
+            .get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/blogs/get/${id}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },

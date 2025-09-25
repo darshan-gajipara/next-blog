@@ -34,7 +34,7 @@ export default function UpdateBlogsComponent({ params }: { params: Promise<{ id:
     useEffect(() => {
         if (!id) return;
         axios
-            .get(`${process.env.BACKEND_BASE_URL}/blogs/get/${id}`, {
+            .get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/blogs/get/${id}`, {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },

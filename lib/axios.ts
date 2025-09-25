@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const AxiosApi = axios.create({
-    baseURL: "https://next-blog-817y.vercel.api/api",
+    baseURL: "https://next-blog-817y.vercel.app/api",
 });
 
 AxiosApi.interceptors.request.use((config) => {

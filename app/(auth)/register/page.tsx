@@ -10,6 +10,8 @@ import Link from "next/link";
 import { withDarkMode } from "@/lib/withDarkMode";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { signIn } from "next-auth/react";
+import Image from "next/image";
 
 const registerSchema = yup.object({
     firstName: yup.string().required("FirstName is required "),
@@ -39,7 +41,7 @@ type RegisterForm = yup.InferType<typeof registerSchema>
 function Register() {
     const router = useRouter();
     const { register, handleSubmit, formState: { errors } } = useForm<RegisterForm>({
-        resolver: yupResolver(registerSchema) 
+        resolver: yupResolver(registerSchema)
     });
 
     const onSubmit = async (data: RegisterForm) => {
@@ -68,6 +70,10 @@ function Register() {
         }
 
 
+    };
+
+    const handleGoogleLogin = async () => {
+        await signIn("google", { callbackUrl: '/blogs' }) // Redirect after login
     };
 
     return (
@@ -126,6 +132,17 @@ function Register() {
                             Register
                         </Button>
                     </form>
+                    <div className="mt-4 text-center">
+                        <Button onClick={handleGoogleLogin} className="w-full flex items-center justify-center gap-2">
+                            <Image
+                                src="/googleicon.png" // ✅ public folder path
+                                alt="Google"
+                                width={20}
+                                height={20}
+                            />
+                            <span>Sign in with Google</span>
+                        </Button>
+                    </div>
                 </CardContent>
             </Card>
         </div>

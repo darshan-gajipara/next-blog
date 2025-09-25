@@ -34,9 +34,12 @@ import {
     PaginationContent,
     PaginationItem,
 } from "@/components/ui/pagination"
-import { useQueryClient } from "@tanstack/react-query";
+// import { useQueryClient } from "@tanstack/react-query";
+import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react"
 
 function BlogsComponet() {
+    const { data: session, status } = useSession();
     // const { blogData, deleteData } = useBlogs();
     const { blogData, blogResponse, getAllData, deleteData, loading } = useBlogsStore();
     const router = useRouter();
@@ -72,13 +75,18 @@ function BlogsComponet() {
         getAllData(search, page, limit);
     }
 
-    const handleLogout = () => {
-        const confirm = window.confirm("Are You sure you want to Logout?")
-        if (confirm) {
-            localStorage.removeItem("token");
-            router.push("/login");
+    const handleLogout = async () => {
+        const confirmLogout = window.confirm("Are you sure you want to Logout?");
+        if (!confirmLogout) return;
+        localStorage.removeItem("token");
+
+        try {
+            await signOut({ redirect: false });
+        } catch (error) {
+            console.warn("Google logout failed (maybe user was not logged in via Google):", error);
         }
-    }
+        router.push("/login");
+    };
 
     if (loading) {
         return <Loader size={64} label="Loading blogs" />;
@@ -91,28 +99,28 @@ function BlogsComponet() {
         <div>
             <div className="flex justify-between items-center border-b px-4">
                 <div>
-                <Link href={"/"} className="pl-5">Home</Link>
-                <Link href={"/about"} className="pl-5">About</Link>
-                <Link href={"/contact"} className="pl-5">Contact</Link>
-                <Link href={"/users"} className="pl-5">Users</Link>
-                <Link href={"/tanstack"} className="pl-5">Tanstack</Link>
-                <Link href={"/providerForm"} className="pl-5">ProviderForm</Link>
-                <Link href={"/multiStepForm"} className="pl-5">MultiStepForm</Link>
-                <Link href={"/counter"} className="pl-5">Counter</Link>
-                <Link href={"/table"} className="pl-5">Tanstack Table</Link>
-            </div>
-            <div className="flex justify-end w-full p-4 items-center gap-4">
-                <div className="text-lg font-semibold text-gray-700">
-                    Hello,&nbsp;welcome back <span className="text-green-600">{user}</span>
+                    <Link href={"/"} className="pl-5">Home</Link>
+                    <Link href={"/about"} className="pl-5">About</Link>
+                    <Link href={"/contact"} className="pl-5">Contact</Link>
+                    <Link href={"/users"} className="pl-5">Users</Link>
+                    <Link href={"/tanstack"} className="pl-5">Tanstack</Link>
+                    <Link href={"/providerForm"} className="pl-5">ProviderForm</Link>
+                    <Link href={"/multiStepForm"} className="pl-5">MultiStepForm</Link>
+                    <Link href={"/counter"} className="pl-5">Counter</Link>
+                    <Link href={"/table"} className="pl-5">Tanstack Table</Link>
                 </div>
-                <Button
-                    variant="default"
-                    className="flex text-center"
-                    onClick={handleLogout}
-                >
-                    Logout
-                </Button>
-            </div>
+                <div className="flex justify-end w-full p-4 items-center gap-4">
+                    <div className="text-lg font-semibold text-gray-700">
+                        Hello,&nbsp;welcome back <span className="text-green-600">{session ? session.user?.name : user}</span>
+                    </div>
+                    <Button
+                        variant="default"
+                        className="flex text-center"
+                        onClick={handleLogout}
+                    >
+                        Logout
+                    </Button>
+                </div>
             </div>
 
             <div className="flex justify-center items-center min-h-screen">

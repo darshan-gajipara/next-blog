@@ -40,7 +40,7 @@ export default function RootLayout({
         {/* <ClientWrapper>{children}</ClientWrapper> */}
         <div className="bg-blue-50">
           <TanstackProviders>
-            {children}
+              {children}
           </TanstackProviders>
           <Toaster position="top-right" />
         </div>

@@ -76,6 +76,10 @@ function Register() {
         await signIn("google", { callbackUrl: '/blogs' }) // Redirect after login
     };
 
+    const handleGitHubLogin = async () => {
+        await signIn("github", { callbackUrl: "/blogs" });
+    };
+
     return (
         <div className="flex min-h-screen items-center justify-center" >
             <Card className="w-full max-w-sm" style={{ background: '#eafff7' }}>
@@ -141,6 +145,22 @@ function Register() {
                                 height={20}
                             />
                             <span>Sign in with Google</span>
+                        </Button>
+                    </div>
+
+                    <div className="mt-2 text-center">
+                        <Button
+                            onClick={handleGitHubLogin}
+                            variant="outline"
+                            className="w-full flex items-center justify-center gap-2"
+                        >
+                            <Image
+                                src="/githubicon.png"
+                                alt="GitHub Icon"
+                                width={20}
+                                height={20}
+                            />
+                            Sign in with GitHub
                         </Button>
                     </div>
                 </CardContent>

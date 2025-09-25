@@ -39,7 +39,11 @@ function Login() {
     };
 
     const handleGoogleLogin = async () => {
-        await signIn("google", { callbackUrl: '/blogs' }) // Redirect after login
+        await signIn("google", { callbackUrl: '/blogs' })
+    };
+
+    const handleGitHubLogin = async () => {
+        await signIn("github", { callbackUrl: "/blogs" });
     };
 
     return (
@@ -90,6 +94,23 @@ function Login() {
                             <span>Sign in with Google</span>
                         </Button>
                     </div>
+
+                    <div className="mt-2 text-center">
+                        <Button
+                            onClick={handleGitHubLogin}
+                            variant="outline"
+                            className="w-full flex items-center justify-center gap-2"
+                        >
+                            <Image
+                                src="/githubicon.png"
+                                alt="GitHub Icon"
+                                width={20}
+                                height={20}
+                            />
+                            Sign in with GitHub
+                        </Button>
+                    </div>
+
                 </CardContent>
             </Card>
         </div>

@@ -99,6 +99,7 @@ function BlogsComponet() {
                 <Link href={"/providerForm"} className="pl-5">ProviderForm</Link>
                 <Link href={"/multiStepForm"} className="pl-5">MultiStepForm</Link>
                 <Link href={"/counter"} className="pl-5">Counter</Link>
+                <Link href={"/table"} className="pl-5">Tanstack Table</Link>
             </div>
             <div className="flex justify-end w-full p-4 items-center gap-4">
                 <div className="text-lg font-semibold text-gray-700">

@@ -4,7 +4,6 @@ import { GenerateSecretKey } from "./lib/GenerateSecretKey";
 
 const AuthMiddleware = async (req: NextRequest) => {
   const ignoredPaths = ["/api/login", "/api/test-env", "/api/register"];
-
   if (
     ignoredPaths.includes(req.nextUrl.pathname) ||
     req.nextUrl.pathname.startsWith("/api/auth")

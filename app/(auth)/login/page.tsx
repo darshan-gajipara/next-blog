@@ -19,8 +19,6 @@ type LoginForm = {
 function Login() {
     const router = useRouter();
     const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>();
-    console.log('process.env.NEXTAUTH_URL', process.env.NEXT_PUBLIC_NEXTAUTH_URL)
-    console.log('process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID', process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID)
     const onSubmit = async (data: LoginForm) => {
         try {
             const res = await fetch("/api/login", {

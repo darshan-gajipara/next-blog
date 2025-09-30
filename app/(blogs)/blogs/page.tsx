@@ -36,12 +36,22 @@ import {
 } from "@/components/ui/pagination"
 // import { useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
-import { signOut } from "next-auth/react"
+import { signOut } from "next-auth/react";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 function BlogsComponet() {
-    const { data: session, status } = useSession();
+    const { data: session } = useSession();
     // const { blogData, deleteData } = useBlogs();
-    const { blogData, blogResponse, getAllData, deleteData, loading } = useBlogsStore();
+    const { blogResponse, getAllData, deleteData, loading } = useBlogsStore();
     const router = useRouter();
     const [user, setUser] = useState<string>("");
     const [quarry, setQuarry] = useState<string>("");
@@ -64,10 +74,10 @@ function BlogsComponet() {
     }
 
     const handleDelete = (id: string) => {
-        const confirm = window.confirm("Are You sure you want to delete this data ?")
-        if (confirm) {
-            deleteData(id);
-        }
+        // const confirm = window.confirm("Are You sure you want to delete this data ?")
+        // if (confirm) {
+        // }
+        deleteData(id);
     }
 
     const handleSearch = (search: string) => {
@@ -76,8 +86,8 @@ function BlogsComponet() {
     }
 
     const handleLogout = async () => {
-        const confirmLogout = window.confirm("Are you sure you want to Logout?");
-        if (!confirmLogout) return;
+        // const confirmLogout = window.confirm("Are you sure you want to Logout?");
+        // if (!confirmLogout) return;
         localStorage.removeItem("token");
 
         try {
@@ -113,13 +123,31 @@ function BlogsComponet() {
                     <div className="text-lg font-semibold text-gray-700">
                         Hello,&nbsp;welcome back <span className="text-green-600">{session ? session.user?.name : user}</span>
                     </div>
-                    <Button
+                    {/* <Button
                         variant="default"
                         className="flex text-center"
                         onClick={handleLogout}
                     >
                         Logout
-                    </Button>
+                    </Button> */}
+
+
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="default">Logout</Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure you want to Logout?</AlertDialogTitle>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={handleLogout}>Continue</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+
+
                 </div>
             </div>
 
@@ -209,13 +237,29 @@ function BlogsComponet() {
                                                         Update
                                                     </Button>
                                                 </Link>
-                                                <Button
+                                                {/* <Button
                                                     className="ml-2"
                                                     variant="destructive"
                                                     onClick={() => handleDelete(blog._id)}
                                                 >
                                                     Delete
-                                                </Button>
+                                                </Button> */}
+
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
+                                                        <Button className="ml-2" variant="destructive">Delete</Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle>Are You sure you want to delete this data ?</AlertDialogTitle>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                            <AlertDialogAction onClick={() => handleDelete(blog._id)}>Continue</AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
+
                                             </TableCell>
                                         </TableRow>
                                     ))

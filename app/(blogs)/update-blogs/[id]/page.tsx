@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 // import { useBlogs } from "@/app/context/BlogsContext";
 import { useBlogsStore } from "@/app/store/useBlogsStore";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Loader from "@/components/Loader/Loader";
 
 type BlogForm = {
@@ -33,12 +33,17 @@ export default function UpdateBlogsComponent({ params }: { params: Promise<{ id:
 
     useEffect(() => {
         if (!id) return;
+
+        const token = localStorage.getItem("token");
+
+        const config = token
+            ? {
+                headers: { Authorization: `Bearer ${token}` },
+            }
+            : {};
+
         axios
-            .get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/blogs/get/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-            })
+            .get(`${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/blogs/get/${id}`, config)
             .then((res) => {
                 console.log(res.data);
                 const blog = res.data;

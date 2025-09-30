@@ -43,7 +43,9 @@ export const useBlogsStore = create<BlogStore>((set) => ({
   blogResponse:null,
 
   getAllData: async (quarry?:string,page?:number,limit?:number) => {
-    // set({ loading: true });
+    if(!quarry && !page && !limit){
+      set({ loading: true });
+    }
     try {
       const blogs = await fetchBlogs((quarry || ''), (page || 1),(limit || 2));
       set({ blogResponse: blogs });

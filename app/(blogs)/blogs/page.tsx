@@ -113,6 +113,7 @@ function BlogsComponet() {
                     <Link href={"/about"} className="pl-5">About</Link>
                     <Link href={"/contact"} className="pl-5">Contact</Link>
                     <Link href={"/users"} className="pl-5">Users</Link>
+                    <Link href={"/blogs"} className="pl-5">Blogs</Link>
                     <Link href={"/tanstack"} className="pl-5">Tanstack</Link>
                     <Link href={"/providerForm"} className="pl-5">ProviderForm</Link>
                     <Link href={"/multiStepForm"} className="pl-5">MultiStepForm</Link>

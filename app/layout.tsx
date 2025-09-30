@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import TanstackProviders from "@/components/Provider/tanstackproviders";
+import Link from "next/link";
 // import { BlogProvider } from "./context/BlogsContext";
 // import ClientWrapper from "@/lib/client-wrapper";
 
@@ -36,11 +37,17 @@ export default function RootLayout({
           <Link href={"/about"} className="pl-5">About</Link>
           <Link href={"/contact"} className="pl-5">Contact</Link>
           <Link href={"/users"} className="pl-5">Users</Link>
+          <Link href={"/blogs"} className="pl-5">Blogs</Link>
+          <Link href={"/tanstack"} className="pl-5">Tanstack</Link>
+          <Link href={"/providerForm"} className="pl-5">ProviderForm</Link>
+          <Link href={"/multiStepForm"} className="pl-5">MultiStepForm</Link>
+          <Link href={"/counter"} className="pl-5">Counter</Link>
+          <Link href={"/table"} className="pl-5">Tanstack Table</Link>
         </div> */}
         {/* <ClientWrapper>{children}</ClientWrapper> */}
         <div className="bg-blue-50">
           <TanstackProviders>
-              {children}
+            {children}
           </TanstackProviders>
           <Toaster position="top-right" />
         </div>
